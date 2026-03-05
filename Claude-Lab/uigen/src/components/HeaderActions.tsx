@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Plus, LogOut, FolderOpen, ChevronDown } from "lucide-react";
+import { Plus, LogOut, FolderOpen, ChevronDown, Sun, Moon } from "lucide-react";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { signOut } from "@/actions";
 import { getProjects } from "@/actions/get-projects";
@@ -45,6 +45,21 @@ export function HeaderActions({ user, projectId }: HeaderActionsProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme");
+    const dark = saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    setIsDark(dark);
+    document.documentElement.classList.toggle("dark", dark);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+  };
 
   // Load projects initially
   useEffect(() => {
@@ -96,6 +111,15 @@ export function HeaderActions({ user, projectId }: HeaderActionsProps) {
     return (
       <>
         <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={toggleTheme}
+            title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
           <Button variant="outline" className="h-8" onClick={handleSignInClick}>
             Sign In
           </Button>
@@ -114,6 +138,15 @@ export function HeaderActions({ user, projectId }: HeaderActionsProps) {
 
   return (
     <div className="flex items-center gap-2">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8"
+        onClick={toggleTheme}
+        title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      >
+        {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </Button>
       {!initialLoading && (
         <Popover open={projectsOpen} onOpenChange={setProjectsOpen}>
           <PopoverTrigger asChild>

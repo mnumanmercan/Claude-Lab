@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { useFileSystem } from "@/lib/contexts/file-system-context";
 import { Code2 } from "lucide-react";
@@ -8,6 +8,15 @@ import { Code2 } from "lucide-react";
 export function CodeEditor() {
   const { selectedFile, getFileContent, updateFile } = useFileSystem();
   const editorRef = useRef<any>(null);
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    const update = () => setIsDark(document.documentElement.classList.contains("dark"));
+    update();
+    const observer = new MutationObserver(update);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
 
   const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor;
@@ -43,13 +52,13 @@ export function CodeEditor() {
 
   if (!selectedFile) {
     return (
-      <div className="h-full flex items-center justify-center bg-gray-900">
+      <div className="h-full flex items-center justify-center bg-neutral-900 dark:bg-neutral-950">
         <div className="text-center">
-          <Code2 className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-          <p className="text-sm text-gray-500">
+          <Code2 className="h-12 w-12 text-neutral-600 mx-auto mb-3" />
+          <p className="text-sm text-neutral-500">
             Select a file to edit
           </p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-xs text-neutral-600 mt-1">
             Choose a file from the file tree
           </p>
         </div>
@@ -67,7 +76,7 @@ export function CodeEditor() {
       value={content}
       onChange={handleEditorChange}
       onMount={handleEditorDidMount}
-      theme="vs-dark"
+      theme={isDark ? "vs-dark" : "vs"}
       options={{
         minimap: { enabled: false },
         fontSize: 14,
