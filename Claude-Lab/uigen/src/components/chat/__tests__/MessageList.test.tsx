@@ -1,7 +1,7 @@
 import { test, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { MessageList } from "../MessageList";
-import type { Message } from "ai";
+import type { UIMessage } from "ai";
 
 // Mock the MarkdownRenderer component
 vi.mock("../MarkdownRenderer", () => ({
@@ -24,7 +24,7 @@ test("MessageList shows empty state when no messages", () => {
 });
 
 test("MessageList renders user messages", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "user",
@@ -32,13 +32,13 @@ test("MessageList renders user messages", () => {
     },
   ];
 
-  render(<MessageList messages={messages} />);
+  render(<MessageList messages={messages as unknown as UIMessage[]} />);
 
   expect(screen.getByText("Create a button component")).toBeDefined();
 });
 
 test("MessageList renders assistant messages", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "assistant",
@@ -46,7 +46,7 @@ test("MessageList renders assistant messages", () => {
     },
   ];
 
-  render(<MessageList messages={messages} />);
+  render(<MessageList messages={messages as unknown as UIMessage[]} />);
 
   expect(
     screen.getByText("I'll help you create a button component.")
@@ -54,7 +54,7 @@ test("MessageList renders assistant messages", () => {
 });
 
 test("MessageList renders messages with parts", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "assistant",
@@ -75,7 +75,7 @@ test("MessageList renders messages with parts", () => {
     },
   ];
 
-  render(<MessageList messages={messages} />);
+  render(<MessageList messages={messages as unknown as UIMessage[]} />);
 
   expect(screen.getByText("Creating your component...")).toBeDefined();
   // ToolCallBadge renders a friendly label, not the raw tool name
@@ -84,7 +84,7 @@ test("MessageList renders messages with parts", () => {
 });
 
 test("MessageList shows content for assistant message with content", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "assistant",
@@ -92,7 +92,7 @@ test("MessageList shows content for assistant message with content", () => {
     },
   ];
 
-  render(<MessageList messages={messages} isLoading={true} />);
+  render(<MessageList messages={messages as unknown as UIMessage[]} isLoading={true} />);
 
   // The component shows the content but not a loading indicator when content is present
   expect(screen.getByText("Generating your component...")).toBeDefined();
@@ -100,7 +100,7 @@ test("MessageList shows content for assistant message with content", () => {
 });
 
 test("MessageList shows loading state for last assistant message without content", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "assistant",
@@ -108,13 +108,13 @@ test("MessageList shows loading state for last assistant message without content
     },
   ];
 
-  render(<MessageList messages={messages} isLoading={true} />);
+  render(<MessageList messages={messages as unknown as UIMessage[]} isLoading={true} />);
 
   expect(screen.getByText("Generating...")).toBeDefined();
 });
 
 test("MessageList doesn't show loading state for non-last messages", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "assistant",
@@ -127,14 +127,14 @@ test("MessageList doesn't show loading state for non-last messages", () => {
     },
   ];
 
-  render(<MessageList messages={messages} isLoading={true} />);
+  render(<MessageList messages={messages as unknown as UIMessage[]} isLoading={true} />);
 
   // Loading state should not appear because the last message is from user, not assistant
   expect(screen.queryByText("Generating...")).toBeNull();
 });
 
 test("MessageList renders reasoning parts", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "assistant",
@@ -150,7 +150,7 @@ test("MessageList renders reasoning parts", () => {
     },
   ];
 
-  render(<MessageList messages={messages} />);
+  render(<MessageList messages={messages as unknown as UIMessage[]} />);
 
   expect(screen.getByText("Reasoning")).toBeDefined();
   expect(
@@ -159,7 +159,7 @@ test("MessageList renders reasoning parts", () => {
 });
 
 test("MessageList renders multiple messages in correct order", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "user",
@@ -182,7 +182,7 @@ test("MessageList renders multiple messages in correct order", () => {
     },
   ];
 
-  const { container } = render(<MessageList messages={messages} />);
+  const { container } = render(<MessageList messages={messages as unknown as UIMessage[]} />);
 
   // Get all message containers in order
   const messageContainers = container.querySelectorAll(".rounded-xl");
@@ -202,7 +202,7 @@ test("MessageList renders multiple messages in correct order", () => {
 });
 
 test("MessageList handles step-start parts", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "assistant",
@@ -215,7 +215,7 @@ test("MessageList handles step-start parts", () => {
     },
   ];
 
-  render(<MessageList messages={messages} />);
+  render(<MessageList messages={messages as unknown as UIMessage[]} />);
 
   expect(screen.getByText("Step 1 content")).toBeDefined();
   expect(screen.getByText("Step 2 content")).toBeDefined();
@@ -225,7 +225,7 @@ test("MessageList handles step-start parts", () => {
 });
 
 test("MessageList applies correct styling for user vs assistant messages", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "user",
@@ -238,7 +238,7 @@ test("MessageList applies correct styling for user vs assistant messages", () =>
     },
   ];
 
-  render(<MessageList messages={messages} />);
+  render(<MessageList messages={messages as unknown as UIMessage[]} />);
 
   const userMessage = screen.getByText("User message").closest(".rounded-xl");
   const assistantMessage = screen
@@ -255,7 +255,7 @@ test("MessageList applies correct styling for user vs assistant messages", () =>
 });
 
 test("MessageList handles empty content with parts", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "assistant",
@@ -264,13 +264,13 @@ test("MessageList handles empty content with parts", () => {
     },
   ];
 
-  render(<MessageList messages={messages} />);
+  render(<MessageList messages={messages as unknown as UIMessage[]} />);
 
   expect(screen.getByText("This is from parts")).toBeDefined();
 });
 
 test("MessageList shows loading for assistant message with empty parts", () => {
-  const messages: Message[] = [
+  const messages = [
     {
       id: "1",
       role: "assistant",
@@ -280,7 +280,7 @@ test("MessageList shows loading for assistant message with empty parts", () => {
   ];
 
   const { container } = render(
-    <MessageList messages={messages} isLoading={true} />
+    <MessageList messages={messages as unknown as UIMessage[]} isLoading={true} />
   );
 
   // Check that exactly one "Generating..." text appears
